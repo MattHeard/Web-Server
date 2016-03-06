@@ -1,6 +1,6 @@
 # Web server
 
-# Requirements
+## Requirements
 
 1.  Idly listen for HTTP requests.
 2.  Accept HTTP requests.
