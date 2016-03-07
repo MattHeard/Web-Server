@@ -3,10 +3,10 @@
 require 'pp'
 require 'socket'
 
+require_relative 'response'
+
 class Server
   PORT = 2000
-  OK_RESPONSE = [ "HTTP/1.1 200 OK" ]
-  NOT_FOUND_RESPONSE = [ "HTTP/1.1 404 NOT FOUND" ]
 
   def initialize
     @server = TCPServer.new(PORT)
@@ -23,28 +23,8 @@ class Server
     puts request_line
 
     path = request_line.split[1]
-    socket.print(response("www" + path))
+    socket.print(Response.new(path))
     socket.close
-  end
-
-  def response(path)
-    (response_header(path) + response_body(path)).join("\r\n")
-  end
-
-  def response_header(path)
-    valid_path?(path) ? OK_RESPONSE : NOT_FOUND_RESPONSE
-  end
-
-  def response_body(path)
-    ["", valid_path?(path) ? read(path).join("\n") : "File not found" ]
-  end
-
-  def read(path)
-    File.file?(path) ? File.readlines(path) : Dir.entries(path)
-  end
-
-  def valid_path?(path)
-    File.file?(path) || File.directory?(path)
   end
 end
 
