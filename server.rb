@@ -28,11 +28,15 @@ class Server
   end
 
   def response(path)
-    if valid_file?(path)
-      (OK_RESPONSE + ["", read(path).join("\n")]).join("\r\n")
-    else
-      (NOT_FOUND_RESPONSE + ["", "File not found"]).join("\r\n")
-    end
+    (response_header(path) + response_body(path)).join("\r\n")
+  end
+
+  def response_header(path)
+    valid_file?(path) ? OK_RESPONSE : NOT_FOUND_RESPONSE
+  end
+
+  def response_body(path)
+    ["", valid_file?(path) ? read(path).join("\n") : "File not found" ]
   end
 
   def read(path)
