@@ -32,19 +32,19 @@ class Server
   end
 
   def response_header(path)
-    valid_file?(path) ? OK_RESPONSE : NOT_FOUND_RESPONSE
+    valid_path?(path) ? OK_RESPONSE : NOT_FOUND_RESPONSE
   end
 
   def response_body(path)
-    ["", valid_file?(path) ? read(path).join("\n") : "File not found" ]
+    ["", valid_path?(path) ? read(path).join("\n") : "File not found" ]
   end
 
   def read(path)
-    File.readlines(path)
+    File.file?(path) ? File.readlines(path) : Dir.entries(path)
   end
 
-  def valid_file?(path)
-    File.file?(path) && path != "www/"
+  def valid_path?(path)
+    File.file?(path) || File.directory?(path)
   end
 end
 
