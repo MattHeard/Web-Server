@@ -1,3 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'pp'
 require 'socket'
 
 class Server
@@ -20,11 +23,25 @@ class Server
     puts request_line
 
     path = request_line.split[1]
-    socket.print(response(path))
+    socket.print(response("www" + path))
     socket.close
   end
 
   def response(path)
-    ((path == "/" ? OK_RESPONSE : NOT_FOUND_RESPONSE) + ["", ""]).join("\r\n")
+    if valid_file?(path)
+      (OK_RESPONSE + ["", read(path).join("\n")]).join("\r\n")
+    else
+      (NOT_FOUND_RESPONSE + ["", "File not found"]).join("\r\n")
+    end
+  end
+
+  def read(path)
+    File.readlines(path)
+  end
+
+  def valid_file?(path)
+    File.file?(path) && path != "www/"
   end
 end
+
+Server.new.start if __FILE__ == $PROGRAM_NAME
